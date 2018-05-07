@@ -53,6 +53,10 @@ defmodule Servy.Handler do
     %{ conv | status: 401, resp_body: "Unable to delete bear with id = #{id}" }
   end
 
+  def route(%Conv{ method: "POST", path: "/bears" } = conv) do
+    %{ conv | status: 201, resp_body: "Create a #{conv.params["type"]} bear with a name #{conv.params["name"]}" }
+  end
+
   def route(%Conv{method: "GET", path: "/pages/" <> page_name} = conv) do
     show_static_page page_name, conv
   end
@@ -198,6 +202,19 @@ Host: example.com
 User-Agent: Browser/1.0
 Accept: */*
 
+"""
+
+IO.puts Servy.Handler.handle(request)
+
+request = """
+POST /bears HTTP/1.1
+Host: example.com
+User-Agent: Browser/1.0
+Accept: */*
+Content-Type: application/x-www-form-urlencoded
+Conent-Length: 22
+
+name=Baloo&type=Brown
 """
 
 IO.puts Servy.Handler.handle(request)
