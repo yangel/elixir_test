@@ -59,15 +59,16 @@ defmodule Servy.Handler do
     %{ conv | status: 200, resp_body: "Teddy" }
   end
 
+  def route(%{ method: "GET", path: "/bears/new" } = conv) do
+    show_static_page "create_bear.html", conv
+  end
+
   def route(%{ method: "GET", path: "/bears/" <> id } = conv) do
     %{ conv | status: 200, resp_body: "Bear with id = #{id}" }
   end
 
   def route(%{ method: "GET", path: "/about" } = conv) do
-    Path.expand("pages")
-    |> Path.join("about.html")
-    |> File.read
-    |> handle_file(conv)
+    show_static_page "about.html", conv
 
 #    case File.read(Path.expand("pages") |> Path.join("about.html")) do
 #      {:ok, content} -> %{conv | status: 200, resp_body: content}
@@ -82,6 +83,13 @@ defmodule Servy.Handler do
 
   def route(%{ path: path } = conv) do
     %{ conv | status: 404, resp_body: "No #{path} here!" }
+  end
+
+  def show_static_page(page_name, conv) do
+    Path.expand("../../pages", __DIR__)
+    |> Path.join(page_name)
+    |> File.read
+    |> handle_file(conv)
   end
 
   def handle_file({:ok, content}, conv) do
@@ -193,6 +201,16 @@ IO.puts Servy.Handler.handle(request)
 
 request = """
 GET /about HTTP/1.1
+Host: example.com
+User-Agent: Browser/1.0
+Accept: */*
+
+"""
+
+IO.puts Servy.Handler.handle(request)
+
+request = """
+GET /bears/new HTTP/1.1
 Host: example.com
 User-Agent: Browser/1.0
 Accept: */*
