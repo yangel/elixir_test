@@ -20,17 +20,17 @@ defmodule Servy.Parser do
     }
   end
 
-  def parse_params("application/x-www-form-urlencoded", params_string) do
+  defp parse_params("application/x-www-form-urlencoded", params_string) do
     params_string |> String.trim |> URI.decode_query
   end
 
-  def parse_params(_, _), do: %{}
+  defp parse_params(_, _), do: %{}
 
-  def parse_headers([head | tail], headers) do
+  defp parse_headers([head | tail], headers) do
     [key, value] = String.split(head, ": ")
     headers = Map.put(headers, key, value)
     parse_headers tail, headers
   end
 
-  def parse_headers([], headers), do: headers
+  defp parse_headers([], headers), do: headers
 end

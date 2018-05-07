@@ -2,12 +2,12 @@ require Logger
 
 defmodule Servy.Handler do
 
-  @moduledoc "Hndles http requests."
+  @moduledoc "Handles http requests."
 
   @pages_path Path.expand("../../pages", __DIR__)
 
   import Servy.Plugins, only: [emojify: 1, track: 1, rewrite_path: 1, log: 1]
-  import Servy.Parser
+  import Servy.Parser, only: [parse: 1]
 
   alias Servy.Conv, as: Conv
 
