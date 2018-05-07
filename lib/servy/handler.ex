@@ -7,6 +7,7 @@ defmodule Servy.Handler do
   @pages_path Path.expand("../../pages", __DIR__)
 
   import Servy.Plugins, only: [emojify: 1, track: 1, rewrite_path: 1, log: 1]
+  import Servy.Parser
 
   @doc "Transforms the request into a response."
   def handle(request) do
@@ -18,21 +19,6 @@ defmodule Servy.Handler do
     |> track
     |> emojify
     |> format_response
-  end
-
-  def parse(request) do
-    [method, path, _] =
-      request
-      |> String.split("\n")
-      |> List.first
-      |> String.split(" ")
-
-    %{
-      method: method,
-      path: path,
-      resp_body: "",
-      status: nil
-    }
   end
 
   def route(%{ method: "GET", path: "/wildthings" } = conv) do
