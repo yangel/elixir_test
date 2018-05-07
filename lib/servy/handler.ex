@@ -89,13 +89,6 @@ defmodule Servy.Handler do
     %{ conv | status: 404, resp_body: "No #{path} here!" }
   end
 
-  def show_static_page(page_name, conv) do
-    Path.expand("../../pages", __DIR__)
-    |> Path.join("#{page_name}.html")
-    |> File.read
-    |> handle_file(conv)
-  end
-
   def handle_file({:ok, content}, conv) do
     %{conv | status: 200, resp_body: content}
   end
@@ -120,6 +113,13 @@ defmodule Servy.Handler do
   end
 
   def log(data), do: IO.inspect(data)
+
+  defp show_static_page(page_name, conv) do
+    Path.expand("../../pages", __DIR__)
+    |> Path.join(page_name <> ".html")
+    |> File.read
+    |> handle_file(conv)
+  end
 
   defp status_reason(code) do
     %{
