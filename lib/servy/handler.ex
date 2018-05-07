@@ -1,6 +1,12 @@
 require Logger
 
 defmodule Servy.Handler do
+
+  @moduledoc "Hndles http requests."
+
+  @pages_path Path.expand("../../pages", __DIR__)
+
+  @doc "Transforms the request into a response."
   def handle(request) do
     request
     |> parse
@@ -115,7 +121,7 @@ defmodule Servy.Handler do
   def log(data), do: IO.inspect(data)
 
   defp show_static_page(page_name, conv) do
-    Path.expand("../../pages", __DIR__)
+    @pages_path
     |> Path.join(page_name <> ".html")
     |> File.read
     |> handle_file(conv)
