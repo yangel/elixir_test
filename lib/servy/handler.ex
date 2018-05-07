@@ -63,12 +63,38 @@ defmodule Servy.Handler do
     %{ conv | status: 200, resp_body: "Bear with id = #{id}" }
   end
 
+  def route(%{ method: "GET", path: "/about" } = conv) do
+    Path.expand("pages")
+    |> Path.join("about.html")
+    |> File.read
+    |> handle_file(conv)
+
+#    case File.read(Path.expand("pages") |> Path.join("about.html")) do
+#      {:ok, content} -> %{conv | status: 200, resp_body: content}
+#      {:error, :enoent} -> %{conv | status: 404, resp_body: "File Not Found!"}
+#      {:error, reason} -> %{conv | status: 500, resp_body: "File reading error: #{reason}"}
+#    end
+  end
+
   def route(%{ method: "DELETE", path: "/bears/" <> id } = conv) do
     %{ conv | status: 401, resp_body: "Unable to delete bear with id = #{id}" }
   end
 
   def route(%{ path: path } = conv) do
     %{ conv | status: 404, resp_body: "No #{path} here!" }
+  end
+
+  def handle_file({:ok, content}, conv) do
+    %{conv | status: 200, resp_body: content}
+  end
+
+  def handle_file({:error, :enoent}, conv) do
+    %{conv | status: 404, resp_body: "File Not Found!"}
+  end
+
+  def handle_file({:error, reason}, conv) do
+    Logger.error "Internal Server Error: #{reason}"
+    %{conv | status: 500, resp_body: "File reading error: #{reason}"}
   end
 
   def format_response(conv) do
@@ -157,6 +183,16 @@ IO.puts Servy.Handler.handle(request)
 
 request = """
 DELETE /bears/2 HTTP/1.1
+Host: example.com
+User-Agent: Browser/1.0
+Accept: */*
+
+"""
+
+IO.puts Servy.Handler.handle(request)
+
+request = """
+GET /about HTTP/1.1
 Host: example.com
 User-Agent: Browser/1.0
 Accept: */*
