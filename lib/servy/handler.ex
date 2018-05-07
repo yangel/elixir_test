@@ -6,6 +6,8 @@ defmodule Servy.Handler do
 
   @pages_path Path.expand("../../pages", __DIR__)
 
+  import Servy.Plugins, only: [emojify: 1, track: 1, rewrite_path: 1, log: 1]
+
   @doc "Transforms the request into a response."
   def handle(request) do
     request
@@ -32,30 +34,6 @@ defmodule Servy.Handler do
       status: nil
     }
   end
-
-  def emojify(%{ status: 200 } = conv) do
-    e = String.duplicate("🎉", 10)
-    %{ conv | resp_body: e <> "\n" <> conv.resp_body <> "\n" <> e }
-  end
-
-  def emojify(conv), do: conv
-
-  def track(%{ status: 404, path: path } = conv) do
-    Logger.warn fn -> "Unable to find route #{path}" end
-    conv
-  end
-
-  def track(conv), do: conv
-
-  def rewrite_path(%{ path: "/wildlife" } = conv) do
-    %{ conv | path: "/wildthings" }
-  end
-
-  def rewrite_path(%{ path: "/bears?id=" <> id } = conv) do
-    %{ conv | path: "/bears/#{id}" }
-  end
-
-  def rewrite_path(conv), do: conv
 
   def route(%{ method: "GET", path: "/wildthings" } = conv) do
     %{ conv | status: 200, resp_body: "Bears, Lions, Tigers" }
@@ -117,8 +95,6 @@ defmodule Servy.Handler do
     #{conv.resp_body}
     """
   end
-
-  def log(data), do: IO.inspect(data)
 
   defp show_static_page(page_name, conv) do
     @pages_path
