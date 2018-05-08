@@ -14,7 +14,9 @@ defmodule Servy.Plugins do
   def emojify(%Conv{} = conv), do: conv
 
   def track(%Conv{status: 404, path: path} = conv) do
-    Logger.warn fn -> "Unable to find route #{path}" end
+    if Mix.env == :dev do
+      Logger.warn fn -> "Unable to find route #{path}" end
+    end
     conv
   end
 
@@ -31,7 +33,9 @@ defmodule Servy.Plugins do
   def rewrite_path(%Conv{} = conv), do: conv
 
   def log(%Conv{} = conv) do
-    Logger.debug inspect conv, pretty: true
+    if Mix.env == :dev do
+      Logger.debug inspect conv, pretty: true
+    end
     conv
   end
 end
