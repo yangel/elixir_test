@@ -1,5 +1,7 @@
 defmodule Servy.BearController do
 
+  @moduledoc false
+
   alias Servy.Wildthings
 
   def index(conv) do
