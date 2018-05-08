@@ -4,11 +4,9 @@ defmodule Servy.Handler do
 
   @moduledoc "Handles http requests."
 
-  @pages_path Path.expand("../../pages", __DIR__)
-
   import Servy.Plugins, only: [emojify: 1, track: 1, rewrite_path: 1, log: 1]
   import Servy.Parser, only: [parse: 1]
-  import Servy.FileHandler, only: [handle_file: 2]
+  import Servy.StaticPages, only: [show_static_page: 2]
 
   alias Servy.Conv, as: Conv
 
@@ -74,13 +72,6 @@ defmodule Servy.Handler do
 
     #{conv.resp_body}
     """
-  end
-
-  defp show_static_page(page_name, conv) do
-    @pages_path
-    |> Path.join(page_name <> ".html")
-    |> File.read
-    |> handle_file(conv)
   end
 end
 
