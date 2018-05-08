@@ -27,6 +27,10 @@ defmodule Servy.BearController do
     %{conv | status: 201, resp_body: "Create a #{type} bear with a name #{name}"}
   end
 
+  def delete(conv, id) do
+    %{conv | status: 401, resp_body: "Unable to delete bear with id = #{id}"}
+  end
+
   defp bear_item(bear) do
     "\t<li>#{bear.name} -> #{bear.type}</li>\n"
   end
