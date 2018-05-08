@@ -1,5 +1,7 @@
 defmodule Servy.StaticPages do
 
+  @moduledoc "Module for loading static pages"
+
   @pages_path Path.expand("../../pages", __DIR__)
 
   import Servy.FileHandler, only: [handle_file: 2]

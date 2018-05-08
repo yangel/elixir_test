@@ -2,6 +2,8 @@ require Logger
 
 defmodule Servy.Parser do
 
+  @moduledoc "Parser module"
+
   alias Servy.Conv, as: Conv
 
   def parse(request) do

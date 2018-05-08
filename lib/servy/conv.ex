@@ -1,4 +1,7 @@
 defmodule Servy.Conv do
+
+  @moduledoc "Conversations module"
+
   defstruct [
     method: "",
     path: "",

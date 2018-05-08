@@ -22,23 +22,23 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def route(%Conv{ method: "GET", path: "/wildthings" } = conv) do
-    %{ conv | status: 200, resp_body: "Bears, Lions, Tigers" }
+  def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
+    %{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
   end
 
-  def route(%Conv{ method: "GET", path: "/bears" } = conv) do
-    %{ conv | status: 200, resp_body: "Teddy" }
+  def route(%Conv{method: "GET", path: "/bears"} = conv) do
+    %{conv | status: 200, resp_body: "Teddy"}
   end
 
-  def route(%Conv{ method: "GET", path: "/bears/new" } = conv) do
+  def route(%Conv{method: "GET", path: "/bears/new"} = conv) do
     show_static_page "create_bear", conv
   end
 
-  def route(%Conv{ method: "GET", path: "/bears/" <> id } = conv) do
-    %{ conv | status: 200, resp_body: "Bear with id = #{id}" }
+  def route(%Conv{method: "GET", path: "/bears/" <> id} = conv) do
+    %{conv | status: 200, resp_body: "Bear with id = #{id}"}
   end
 
-  def route(%Conv{ method: "GET", path: "/about" } = conv) do
+  def route(%Conv{method: "GET", path: "/about"} = conv) do
     show_static_page "about", conv
 
 #    case File.read(Path.expand("pages") |> Path.join("about.html")) do
@@ -48,20 +48,20 @@ defmodule Servy.Handler do
 #    end
   end
 
-  def route(%Conv{ method: "DELETE", path: "/bears/" <> id } = conv) do
-    %{ conv | status: 401, resp_body: "Unable to delete bear with id = #{id}" }
+  def route(%Conv{method: "DELETE", path: "/bears/" <> id} = conv) do
+    %{conv | status: 401, resp_body: "Unable to delete bear with id = #{id}"}
   end
 
-  def route(%Conv{ method: "POST", path: "/bears" } = conv) do
-    %{ conv | status: 201, resp_body: "Create a #{conv.params["type"]} bear with a name #{conv.params["name"]}" }
+  def route(%Conv{method: "POST", path: "/bears"} = conv) do
+    %{conv | status: 201, resp_body: "Create a #{conv.params["type"]} bear with a name #{conv.params["name"]}"}
   end
 
   def route(%Conv{method: "GET", path: "/pages/" <> page_name} = conv) do
     show_static_page page_name, conv
   end
 
-  def route(%Conv{ path: path } = conv) do
-    %{ conv | status: 404, resp_body: "No #{path} here!" }
+  def route(%Conv{path: path} = conv) do
+    %{conv | status: 404, resp_body: "No #{path} here!"}
   end
 
   def format_response(%Conv{} = conv) do
