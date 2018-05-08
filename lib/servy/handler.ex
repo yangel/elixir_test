@@ -50,7 +50,8 @@ defmodule Servy.Handler do
 #    case File.read(Path.expand("pages") |> Path.join("about.html")) do
 #      {:ok, content} -> %{conv | status: 200, resp_body: content}
 #      {:error, :enoent} -> %{conv | status: 404, resp_body: "File Not Found!"}
-#      {:error, reason} -> %{conv | status: 500, resp_body: "File reading error: #{reason}"}
+#      {:error, reason} ->
+#        %{conv | status: 500, resp_body: "File reading error: #{reason}"}
 #    end
   end
 
