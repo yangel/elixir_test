@@ -3,12 +3,13 @@ defmodule Servy.BearController do
   @moduledoc false
 
   alias Servy.Wildthings
+  alias Servy.Bear
 
   def index(conv) do
     bears =
       Wildthings.list_bears()
-      |> Enum.sort(fn l_bear, r_bear -> l_bear.name <= r_bear.name end)
-      |> Enum.map(fn bear -> bear_item bear end)
+      |> Enum.sort(&Bear.asc_name/2)
+      |> Enum.map(&bear_item/1)
       |> Enum.join
 
     %{conv | status: 200, resp_body: "<ul>\n#{bears}</ul>"}
