@@ -30,5 +30,8 @@ defmodule Servy.Plugins do
 
   def rewrite_path(%Conv{} = conv), do: conv
 
-  def log(data), do: Logger.debug inspect data
+  def log(%Conv{} = conv) do
+    Logger.debug inspect conv, pretty: true
+    conv
+  end
 end

@@ -9,6 +9,7 @@ defmodule Servy.Handler do
   import Servy.StaticPages, only: [show_static_page: 2]
 
   alias Servy.Conv, as: Conv
+  alias Servy.BearController, as: BearController
 
   @doc "Transforms the request into a response."
   def handle(request) do
@@ -22,20 +23,25 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
-    %{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
+  def route(%Conv{method: "GET", path: "/bears"} = conv) do
+    BearController.index(conv)
   end
 
-  def route(%Conv{method: "GET", path: "/bears"} = conv) do
-    %{conv | status: 200, resp_body: "Teddy"}
+  def route(%Conv{method: "GET", path: "/bears/" <> id} = conv) do
+    params = Map.put(conv.params, "id", id)
+    BearController.show(conv, params)
+  end
+
+  def route(%Conv{method: "POST", path: "/bears"} = conv) do
+    BearController.create(conv, conv.params)
   end
 
   def route(%Conv{method: "GET", path: "/bears/new"} = conv) do
     show_static_page "create_bear", conv
   end
 
-  def route(%Conv{method: "GET", path: "/bears/" <> id} = conv) do
-    %{conv | status: 200, resp_body: "Bear with id = #{id}"}
+  def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
+    %{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
   end
 
   def route(%Conv{method: "GET", path: "/about"} = conv) do
@@ -50,10 +56,6 @@ defmodule Servy.Handler do
 
   def route(%Conv{method: "DELETE", path: "/bears/" <> id} = conv) do
     %{conv | status: 401, resp_body: "Unable to delete bear with id = #{id}"}
-  end
-
-  def route(%Conv{method: "POST", path: "/bears"} = conv) do
-    %{conv | status: 201, resp_body: "Create a #{conv.params["type"]} bear with a name #{conv.params["name"]}"}
   end
 
   def route(%Conv{method: "GET", path: "/pages/" <> page_name} = conv) do
