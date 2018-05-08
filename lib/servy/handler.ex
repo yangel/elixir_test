@@ -4,7 +4,7 @@ defmodule Servy.Handler do
 
   @moduledoc "Handles http requests."
 
-  import Servy.Plugins, only: [emojify: 1, track: 1, rewrite_path: 1, log: 1]
+  import Servy.Plugins, only: [track: 1, rewrite_path: 1, log: 1]
   import Servy.Parser, only: [parse: 1]
   import Servy.StaticPages, only: [show_static_page: 2]
 
@@ -19,7 +19,6 @@ defmodule Servy.Handler do
     |> log
     |> route
     |> track
-    |> emojify
     |> format_response
   end
 
@@ -69,134 +68,11 @@ defmodule Servy.Handler do
 
   def format_response(%Conv{} = conv) do
     """
-    HTTP/1.1 #{Conv.full_status(conv)}
-    Content-Type: text/html
-    Content-Length: #{String.length(conv.resp_body)}
-
+    HTTP/1.1 #{Conv.full_status(conv)}\r
+    Content-Type: text/html\r
+    Content-Length: #{String.length(conv.resp_body)}\r
+    \r
     #{conv.resp_body}
     """
   end
 end
-
-request = """
-GET /wildthings HTTP/1.1
-Host: example.com
-User-Agent: Browser/1.0
-Accept: */*
-
-"""
-
-IO.puts Servy.Handler.handle(request)
-
-request = """
-GET /bigfoot HTTP/1.1
-Host: example.com
-User-Agent: Browser/1.0
-Accept: */*
-
-"""
-
-IO.puts Servy.Handler.handle(request)
-
-request = """
-GET /wildlife HTTP/1.1
-Host: example.com
-User-Agent: Browser/1.0
-Accept: */*
-
-"""
-
-IO.puts Servy.Handler.handle(request)
-
-request = """
-GET /bears?id=100500 HTTP/1.1
-Host: example.com
-User-Agent: Browser/1.0
-Accept: */*
-
-"""
-
-IO.puts Servy.Handler.handle(request)
-
-request = """
-DELETE /bears/2 HTTP/1.1
-Host: example.com
-User-Agent: Browser/1.0
-Accept: */*
-
-"""
-
-IO.puts Servy.Handler.handle(request)
-
-request = """
-GET /about HTTP/1.1
-Host: example.com
-User-Agent: Browser/1.0
-Accept: */*
-
-"""
-
-IO.puts Servy.Handler.handle(request)
-
-request = """
-GET /bears/new HTTP/1.1
-Host: example.com
-User-Agent: Browser/1.0
-Accept: */*
-
-"""
-
-IO.puts Servy.Handler.handle(request)
-
-request = """
-GET /pages/new HTTP/1.1
-Host: example.com
-User-Agent: Browser/1.0
-Accept: */*
-
-"""
-
-IO.puts Servy.Handler.handle(request)
-
-request = """
-GET /pages/faq HTTP/1.1
-Host: example.com
-User-Agent: Browser/1.0
-Accept: */*
-
-"""
-
-IO.puts Servy.Handler.handle(request)
-
-request = """
-POST /bears HTTP/1.1
-Host: example.com
-User-Agent: Browser/1.0
-Accept: */*
-Content-Type: application/x-www-form-urlencoded
-Conent-Length: 22
-
-name=Baloo&type=Brown
-"""
-
-IO.puts Servy.Handler.handle(request)
-
-request = """
-GET /bears HTTP/1.1
-Host: example.com
-User-Agent: Browser/1.0
-Accept: */*
-
-"""
-
-IO.puts Servy.Handler.handle(request)
-
-request = """
-GET /bears/1 HTTP/1.1
-Host: example.com
-User-Agent: Browser/1.0
-Accept: */*
-
-"""
-
-IO.puts Servy.Handler.handle(request)
