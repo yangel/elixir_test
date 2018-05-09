@@ -1,0 +1,34 @@
+{
+  "bears": [
+    {
+      "id": 1,
+      "name": "Teddy",
+      "type": "Brown",
+      "hibernating": true
+    },
+    {
+      "id": 2,
+      "name": "Smokey",
+      "type": "Black",
+      "hibernating": true
+    },
+    {
+      "id": 3,
+      "name": "Snow",
+      "type": "Grizzly",
+      "hibernating": false
+    },
+    {
+      "id": 4,
+      "name": "Iceman",
+      "type": "Panda",
+      "hibernating": false
+    },
+    {
+      "id": 5,
+      "name": "Scarface",
+      "type": "Polar",
+      "hibernating": false
+    }
+  ]
+}
