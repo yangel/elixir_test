@@ -22,7 +22,9 @@ defmodule Servy.HttpServer do
 
     Logger.info("Connection accepted!")
 
-    spawn(fn -> serve client_socket end)
+    pid = spawn(fn -> serve client_socket end)
+    :ok = :gen_tcp.controlling_process(client_socket, pid)
+
     accept_loop listen_socket
   end
 
