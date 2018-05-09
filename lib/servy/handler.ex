@@ -22,6 +22,18 @@ defmodule Servy.Handler do
     |> format_response
   end
 
+  def route(%Conv{method: "GET", path: "/crash"} = conv) do
+    raise "Crash!"
+  end
+
+  def route(%Conv{method: "GET", path: "/hibernate/" <> time} = conv) do
+    time
+    |> String.to_integer
+    |> :timer.sleep
+
+    %{conv | status: 200, resp_body: "Awake!"}
+  end
+
   def route(%Conv{method: "GET", path: "/bears"} = conv) do
     BearController.index(conv)
   end

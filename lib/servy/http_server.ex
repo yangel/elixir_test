@@ -22,11 +22,13 @@ defmodule Servy.HttpServer do
 
     Logger.info("Connection accepted!\n")
 
-    serve client_socket
+    spawn(fn -> serve client_socket end)
     accept_loop listen_socket
   end
 
   defp serve(client_socket) do
+    Logger.info("Running on PID #{inspect self()}")
+
     client_socket
     |> read_request
     |> Handler.handle
