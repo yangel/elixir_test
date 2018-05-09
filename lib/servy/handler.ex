@@ -10,6 +10,7 @@ defmodule Servy.Handler do
 
   alias Servy.Conv, as: Conv
   alias Servy.BearController, as: BearController
+  alias Servy.VideoCam
 
   @doc "Transforms the request into a response."
   def handle(request) do
@@ -24,6 +25,22 @@ defmodule Servy.Handler do
 
   def route(%Conv{method: "GET", path: "/crash"} = conv) do
     raise "Crash!"
+  end
+
+  def route(%Conv{method: "GET", path: "/snapshots"} = conv) do
+    parent = self()
+
+    spawn(fn -> send(parent, {:result, VideoCam.snapshot("cam-1")}) end)
+    spawn(fn -> send(parent, {:result, VideoCam.snapshot("cam-2")}) end)
+    spawn(fn -> send(parent, {:result, VideoCam.snapshot("cam-3")}) end)
+
+    snapshot1 = receive do {:result, filename} -> filename end
+    snapshot2 = receive do {:result, filename} -> filename end
+    snapshot3 = receive do {:result, filename} -> filename end
+
+    snapshots = [snapshot1, snapshot2, snapshot3]
+
+    %{conv | status: 200, resp_body: inspect(snapshots)}
   end
 
   def route(%Conv{method: "GET", path: "/hibernate/" <> time} = conv) do
