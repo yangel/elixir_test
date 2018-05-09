@@ -1,5 +1,7 @@
 defmodule Servy.HttpServer do
 
+  @moduledoc false
+
   require Logger
 
   alias Servy.Handler

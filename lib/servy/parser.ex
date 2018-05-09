@@ -5,6 +5,7 @@ defmodule Servy.Parser do
   @moduledoc "Parser module"
 
   alias Servy.Conv, as: Conv
+  alias Poison.Parser
 
   def parse(request) do
     [top, params_string] = String.split(request, "\r\n\r\n")
@@ -38,7 +39,7 @@ defmodule Servy.Parser do
   end
 
   def parse_params("application/json", params_string) do
-    Poison.Parser.parse!(params_string)
+    Parser.parse!(params_string)
   end
 
   def parse_params(_, _), do: %{}
