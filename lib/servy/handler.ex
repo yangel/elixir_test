@@ -52,7 +52,8 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/about"} = conv) do
-    show_static_page "about", conv
+    content = show_static_page "about", conv
+    %{conv | status: 200, resp_body: Earmark.as_html!(content.resp_body)}
 
 #    case File.read(Path.expand("pages") |> Path.join("about.html")) do
 #      {:ok, content} -> %{conv | status: 200, resp_body: content}
