@@ -23,16 +23,16 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def route(%Conv{method: "GET", path: "/crash"} = conv) do
+  def route(%Conv{method: "GET", path: "/crash"} = _conv) do
     raise "Crash!"
   end
 
   def route(%Conv{method: "GET", path: "/snapshots"} = conv) do
     parent = self()
 
-    spawn(fn -> send(parent, {:result, VideoCam.snapshot("cam-1")}) end)
-    spawn(fn -> send(parent, {:result, VideoCam.snapshot("cam-2")}) end)
-    spawn(fn -> send(parent, {:result, VideoCam.snapshot("cam-3")}) end)
+    spawn(fn -> send(parent, {:result, VideoCam.snapshot("16x3i5")}) end)
+    spawn(fn -> send(parent, {:result, VideoCam.snapshot("16x3i5")}) end)
+    spawn(fn -> send(parent, {:result, VideoCam.snapshot("16x3i5")}) end)
 
     snapshot1 = receive do {:result, filename} -> filename end
     snapshot2 = receive do {:result, filename} -> filename end
