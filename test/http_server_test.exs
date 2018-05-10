@@ -27,7 +27,13 @@ defmodule HttpServerTest do
       end
     end
 
-    {:ok, response} = HTTPoison.get "http://localhost:4001/bears/some_string"
-    assert response.status_code == 404
+    spawn(fn ->
+      {:ok, response} = HTTPoison.get "http://localhost:4001/bears/some_string"
+      send(parent, {:ok, response})
+    end)
+
+    receive do
+      {:ok, response} -> assert response.status_code == 404
+    end
   end
 end
