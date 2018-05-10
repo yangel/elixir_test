@@ -18,7 +18,10 @@ defmodule Servy.Wildthings do
   end
 
   def bear_by_id(id) when is_binary id do
-    id |> String.to_integer |> bear_by_id
+    case Integer.parse id do
+      {int_value, _} -> int_value |> bear_by_id
+      :error -> nil
+    end
   end
 
   defp read_json(source) do
