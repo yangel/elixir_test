@@ -31,9 +31,9 @@ defmodule Servy.Handler do
   def route(%Conv{method: "GET", path: "/snapshots"} = conv) do
     parent = self()
 
-    Fetcher.async("16x3i5")
-    Fetcher.async("16x3i5")
-    Fetcher.async("16x3i5")
+    Fetcher.async(fn -> VideoCam.snapshot("16x3i5") end)
+    Fetcher.async(fn -> VideoCam.snapshot("16x3i5") end)
+    Fetcher.async(fn -> VideoCam.snapshot("16x3i5") end)
 
     snapshot1 = Fetcher.get_result()
     snapshot2 = Fetcher.get_result()
