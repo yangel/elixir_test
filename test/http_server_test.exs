@@ -6,9 +6,8 @@ defmodule HttpServerTest do
   test "accepts a request on a socket and sends back a response" do
     spawn(HttpServer, :start, [4001])
 
-    url = "http://localhost:4001/wildthings"
-    1..5
-      |> Enum.map(fn (_) -> Task.async(fn -> HTTPoison.get url end) end)
+    ["wildthings", "bears", "about", "api/bears", "bears/1"]
+      |> Enum.map(&Task.async(fn -> HTTPoison.get("http://localhost:4001/#{&1}") end))
       |> Enum.map(&Task.await/1)
       |> Enum.map(&assert_success_response/1)
 
@@ -25,6 +24,5 @@ defmodule HttpServerTest do
 
   defp assert_success_response({:ok, response}) do
     assert response.status_code == 200
-    assert response.body == "Bears, Lions, Tigers"
   end
 end
