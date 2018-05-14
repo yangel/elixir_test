@@ -7,7 +7,7 @@ defmodule HttpServerTest do
     spawn(HttpServer, :start, [4001])
 
     ["wildthings", "bears", "about", "api/bears", "bears/1"]
-      |> Enum.map(&Task.async(fn -> HTTPoison.get("http://localhost:4001/#{&1}") end))
+      |> Enum.map(&Task.async(HTTPoison, :get, ["http://localhost:4001/#{&1}"]))
       |> Enum.map(&Task.await/1)
       |> Enum.map(&assert_success_response/1)
 
