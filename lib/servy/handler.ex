@@ -11,7 +11,6 @@ defmodule Servy.Handler do
   alias Servy.Conv, as: Conv
   alias Servy.BearController, as: BearController
   alias Servy.VideoCam
-  alias Servy.Fetcher
 
   @doc "Transforms the request into a response."
   def handle(request) do
@@ -28,20 +27,17 @@ defmodule Servy.Handler do
     raise "Crash!"
   end
 
-  def route(%Conv{method: "GET", path: "/snapshots"} = conv) do
-    parent = self()
+  def route(%Conv{method: "GET", path: "/sensors"} = conv) do
+    task = Task.async(fn -> T.get_location "bigfoot" end)
 
-    Fetcher.async(fn -> VideoCam.snapshot("16x3i5") end)
-    Fetcher.async(fn -> VideoCam.snapshot("16x3i5") end)
-    Fetcher.async(fn -> VideoCam.snapshot("16x3i5") end)
+    snapshots =
+      ["16x3i5", "16x3i5", "16x3i5"]
+      |> Enum.map(&Task.async(fn -> VideoCam.snapshot(&1) end))
+      |> Enum.map(&Task.await/1)
 
-    snapshot1 = Fetcher.get_result()
-    snapshot2 = Fetcher.get_result()
-    snapshot3 = Fetcher.get_result()
+    location = Task.await(task)
 
-    snapshots = [snapshot1, snapshot2, snapshot3]
-
-    %{conv | status: 200, resp_body: inspect(snapshots)}
+    %{conv | status: 200, resp_body: inspect({snapshots, location})}
   end
 
   def route(%Conv{method: "GET", path: "/hibernate/" <> time} = conv) do
