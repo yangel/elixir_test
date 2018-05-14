@@ -1,6 +1,8 @@
 defmodule Servy.ImageApi do
   @moduledoc false
 
+  alias Poison.Parser
+
   def query(image_id) do
     image_id
       |> api_url
@@ -16,7 +18,7 @@ defmodule Servy.ImageApi do
     {
       :ok,
       body
-        |> Poison.Parser.parse!
+        |> Parser.parse!
         |> get_in(["image", "image_url"])
     }
   end
@@ -25,7 +27,7 @@ defmodule Servy.ImageApi do
     {
       :error,
       body
-        |> Poison.Parser.parse!
+        |> Parser.parse!
         |> get_in(["message"])
     }
   end

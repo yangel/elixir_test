@@ -12,10 +12,15 @@ defmodule HttpServerTest do
       |> Enum.map(&Task.await/1)
       |> Enum.map(&assert_success_response/1)
 
-    {:ok, response} = Task.async(HTTPoison, :get, ["http://localhost:4001/bears/some_string"])
-      |> Task.await()
-    assert response.status_code == 404
+    fn -> HTTPoison.get "http://localhost:4001/bears/some_string" end
+      |> Task.async
+      |> Task.await
+      |> assert_undefined_response
+  end
 
+  defp assert_undefined_response({:ok, response}) do
+    assert response.status_code == 404
+    assert response.body == "Bear with id some_string not found"
   end
 
   defp assert_success_response({:ok, response}) do

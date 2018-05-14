@@ -17,5 +17,4 @@ defmodule Servy.Tracker do
 
     Map.get(locations, wildthing)
   end
-  
 end
