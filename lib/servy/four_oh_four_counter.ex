@@ -3,59 +3,45 @@ defmodule Servy.FourOhFourCounter do
 
   @service_name __MODULE__
 
+  alias Servy.GenericServer
+
   # Client
   def start do
-    pid = spawn(__MODULE__, :listen_loop, [%{}])
-    Process.register(pid, @service_name)
-  end
-
-  def bump_count(path) do
-    send @service_name, {self(), :bump_count, path}
-    receive do {:response, state} -> state end
-  end
-
-  def get_count(path) do
-    send @service_name, {self(), :get_count, path}
-    receive do {:response, count} -> count end
-  end
-
-  def get_counts do
-    send @service_name, {self(), :get_counts}
-    receive do {:response, map} -> map end
+    GenericServer.start(__MODULE__, %{}, @service_name)
   end
 
   def stop do
-    Process.unregister(@service_name)
+    GenericServer.stop(@service_name)
   end
 
   def process_name do
     @service_name
   end
 
-  # Server
-  def listen_loop(state) do
-    require Logger
+  def bump_count(path) do
+    GenericServer.call @service_name, {:bump_count, path}
+  end
 
-    if Mix.env == :test do
-      Logger.debug(inspect state, pretty: true)
-    end
+  def get_count(path) do
+    GenericServer.call @service_name, {:get_count, path}
+  end
 
-    receive do
-      {sender, :bump_count, path} ->
-        new_state = Map.update(state, path, 1, fn count -> count + 1 end)
-        send sender, {:response, :ok}
-        listen_loop(new_state)
-      {sender, :get_counts} ->
-        send sender, {:response, state}
-        listen_loop(state)
-      {sender, :get_count, path} ->
-        count = Map.get(state, path)
-        send sender, {:response, count}
-        listen_loop(state)
-      unexpected ->
-        Logger.warn("Unexpected message: #{inspect unexpected, pretty: true}")
-        listen_loop(state)
-    end
+  def get_counts do
+    GenericServer.call @service_name, :get_counts
+  end
+
+  def handle_call(:get_counts, state) do
+    {state, state}
+  end
+
+  def handle_call({:bump_count, path}, state) do
+    new_state = Map.update(state, path, 1, fn count -> count + 1 end)
+    {:ok, new_state}
+  end
+
+  def handle_call({:get_count, path}, state) do
+    count = Map.get(state, path)
+    {count, state}
   end
 
 end

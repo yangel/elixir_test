@@ -4,6 +4,7 @@ defmodule Servy do
 
   alias Servy.PledgeServer
   alias Servy.HttpServer
+  alias Servy.FourOhFourCounter
 
   def hello(name) do
     "Hello, #{name}"
@@ -11,6 +12,7 @@ defmodule Servy do
 
   def start_engines(port \\ 4000) do
     PledgeServer.start()
+    FourOhFourCounter.start()
     spawn(fn -> HttpServer.start port end)
   end
 end

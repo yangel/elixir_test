@@ -18,6 +18,10 @@ defmodule Servy.GenericServer do
     send pid, {:cast, message}
   end
 
+  def stop(name) do
+    Process.unregister(name)
+  end
+
   # Server
   def listen_loop(state, callback_module) do
     receive do
