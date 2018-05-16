@@ -25,9 +25,19 @@ defmodule Servy.PledgeServer do
     call @process_name, :total_pledged
   end
 
+  def clear do
+    cast @process_name, :clear
+  end
+
+  # Helper functions
+
   def call(pid, message) do
     send pid, {self(), message}
     receive do {:response, response} -> response end
+  end
+
+  def cast(pid, message) do
+    send pid, message
   end
 
   # Server
@@ -37,6 +47,9 @@ defmodule Servy.PledgeServer do
         {response, new_state} = handle_call(message, state)
         send sender, {:response, response}
         listen_loop new_state
+      :clear ->
+        new_state = []
+        listen_loop(new_state)
       unexpected ->
         Logger.warn("Received unexpected message: #{inspect unexpected, pretty: true}")
         listen_loop(state)
