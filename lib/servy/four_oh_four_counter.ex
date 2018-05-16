@@ -30,6 +30,10 @@ defmodule Servy.FourOhFourCounter do
     GenericServer.call @service_name, :get_counts
   end
 
+  def clear do
+    GenericServer.cast @service_name, :clear
+  end
+
   def handle_call(:get_counts, state) do
     {state, state}
   end
@@ -42,6 +46,10 @@ defmodule Servy.FourOhFourCounter do
   def handle_call({:get_count, path}, state) do
     count = Map.get(state, path)
     {count, state}
+  end
+
+  def handle_cast(:clear, _state) do
+    %{}
   end
 
 end
