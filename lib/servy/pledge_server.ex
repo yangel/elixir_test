@@ -33,24 +33,30 @@ defmodule Servy.PledgeServer do
   # Server
   def listen_loop(state) do
     receive do
-      {sender, {:create_pledge, name, amount}} ->
-        {:ok, id} = send_pledge_to_service(name, amount)
-        send sender, {:response, id}
-        most_recent_pledges = Enum.take(state, 2)
-        new_state = [{name, amount} | most_recent_pledges]
-        listen_loop(new_state)
-      {sender, :recent_pledges} ->
-        send sender, {:response, state}
-        listen_loop(state)
-      {sender, :total_pledged} ->
-#        total = Enum.map(state, fn {_, amount} -> amount end) |> Enum.sum()
-        total = state |> Enum.map(&elem(&1, 1)) |> Enum.sum()
-        send sender, {:response, total}
-        listen_loop(state)
+      {sender, message} when is_pid(sender) ->
+        {response, new_state} = handle_call(message, state)
+        send sender, {:response, response}
+        listen_loop new_state
       unexpected ->
         Logger.warn("Received unexpected message: #{inspect unexpected, pretty: true}")
         listen_loop(state)
     end
+  end
+
+  def handle_call(:total_pledged, state) do
+#   total = Enum.map(state, fn {_, amount} -> amount end) |> Enum.sum()
+    {state |> Enum.map(&elem(&1, 1)) |> Enum.sum(), state}
+  end
+
+  def handle_call(:recent_pledges, state) do
+    {state, state}
+  end
+
+  def handle_call({:create_pledge, name, amount}, state) do
+    {:ok, id} = send_pledge_to_service(name, amount)
+    most_recent_pledges = Enum.take(state, 2)
+    new_state = [{name, amount} | most_recent_pledges]
+    {id, new_state}
   end
 
   defp send_pledge_to_service(_name, _amount) do
