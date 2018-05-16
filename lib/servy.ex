@@ -16,5 +16,3 @@ defmodule Servy do
     spawn(fn -> HttpServer.start port end)
   end
 end
-
-IO.puts Servy.hello("Test!")
