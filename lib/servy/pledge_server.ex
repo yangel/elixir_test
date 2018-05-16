@@ -30,8 +30,24 @@ defmodule Servy.PledgeServer do
     GenServer.cast @process_name, :clear
   end
 
+  def set_cache_size(size) do
+    GenServer.cast @process_name, {:set_cache_size, size}
+  end
+
+  # Server Callbacks
+
+  def init(state) do
+    pledges_from_service = fetch_recent_pledges_form_service()
+    {:ok, %{state | pledges: pledges_from_service}}
+  end
+
   def handle_cast(:clear, state) do
     {:noreply, %{state | pledges: []}}
+  end
+
+  def handle_cast({:set_cache_size, size}, state) do
+    new_state = %{state | cache_size: size}
+    {:noreply, new_state}
   end
 
   def handle_call(:total_pledged, _from, state) do
@@ -61,6 +77,10 @@ defmodule Servy.PledgeServer do
       |> Base.url_encode64()
       |> binary_part(0, length)
       |> String.downcase()
+  end
+
+  defp fetch_recent_pledges_form_service do
+    [{"Evgeny", 15}, {"Fred", 20}]
   end
 
 end
