@@ -29,6 +29,10 @@ defmodule Servy.Handler do
     PledgeController.index(conv)
   end
 
+  def route(%Conv{method: "GET", path: "/pledges/new"} = conv) do
+    PledgeController.new(conv)
+  end
+
   def route(%Conv{method: "POST", path: "/pledges"} = conv) do
     PledgeController.create(conv, conv.params)
   end

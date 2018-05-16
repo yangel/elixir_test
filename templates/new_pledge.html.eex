@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Pledge</title>
+</head>
+<body>
+<form action="/pledges" method="post">
+    <p>Name:<br/><input type="text" name="name" title="Name"></p>
+    <p>Amount:<br/><input type="number" name="amount" title="Amount"></p>
+    <p>
+        <input type="submit" value="Create">
+    </p>
+</form>
+</body>
+</html>
