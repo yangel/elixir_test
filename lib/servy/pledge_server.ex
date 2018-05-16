@@ -48,7 +48,7 @@ defmodule Servy.PledgeServer do
 
   # Client Interface
   def start(initial_state \\ []) do
-    Servy.GenericServer.start(__MODULE__, initial_state, @process_name)
+    GenericServer.start(__MODULE__, initial_state, @process_name)
   end
 
   def create_pledge(name, amount) do
