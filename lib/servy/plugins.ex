@@ -5,6 +5,7 @@ defmodule Servy.Plugins do
   @moduledoc "Module for additional functions"
 
   alias Servy.Conv, as: Conv
+  alias Servy.FourOhFourCounter
 
   def emojify(%Conv{status: 200} = conv) do
     e = String.duplicate("🎉", 10)
@@ -14,6 +15,7 @@ defmodule Servy.Plugins do
   def emojify(%Conv{} = conv), do: conv
 
   def track(%Conv{status: 404, path: path} = conv) do
+    FourOhFourCounter.bump_count(path)
     if Mix.env == :dev do
       Logger.warn fn -> "Unable to find route #{path}" end
     end

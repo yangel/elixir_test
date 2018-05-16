@@ -13,6 +13,7 @@ defmodule Servy.Handler do
   alias Servy.VideoCam
   alias Servy.Tracker
   alias Servy.PledgeController
+  alias Servy.FourOhFourCounter
 
   @doc "Transforms the request into a response."
   def handle(request) do
@@ -23,6 +24,16 @@ defmodule Servy.Handler do
     |> route
     |> track
     |> format_response
+  end
+
+  def route(%Conv{method: "GET", path: "/404/" <> path} = conv) do
+    not_found = FourOhFourCounter.get_count(path)
+    %{conv | status: 200, resp_body: inspect not_found}
+  end
+
+  def route(%Conv{method: "GET", path: "/404"} = conv) do
+    all_not_found = FourOhFourCounter.get_counts()
+    %{conv | status: 200, resp_body: inspect all_not_found}
   end
 
   def route(%Conv{method: "GET", path: "/pledges"} = conv) do

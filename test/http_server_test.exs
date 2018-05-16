@@ -2,8 +2,11 @@ defmodule HttpServerTest do
   use ExUnit.Case
 
   alias Servy.HttpServer
+  alias Servy.FourOhFourCounter
 
   test "accepts a request on a socket and sends back a response" do
+    FourOhFourCounter.start()
+
     spawn(HttpServer, :start, [4001])
 
     ["wildthings", "bears", "about", "api/bears", "bears/1"]
@@ -15,6 +18,8 @@ defmodule HttpServerTest do
       |> Task.async
       |> Task.await
       |> assert_undefined_response
+
+    FourOhFourCounter.stop()
   end
 
   defp assert_undefined_response({:ok, response}) do

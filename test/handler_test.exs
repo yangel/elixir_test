@@ -3,6 +3,8 @@ defmodule HandlerTest do
 
   import Servy.Handler, only: [handle: 1]
 
+  alias Servy.FourOhFourCounter
+
   test "GET /wildthings" do
     request = """
     GET /wildthings HTTP/1.1\r
@@ -54,6 +56,8 @@ defmodule HandlerTest do
   end
 
   test "GET /bigfoot" do
+    FourOhFourCounter.start()
+
     request = """
     GET /bigfoot HTTP/1.1\r
     Host: example.com\r
@@ -71,6 +75,8 @@ defmodule HandlerTest do
            \r
            No /bigfoot here!
            """
+
+    FourOhFourCounter.stop()
   end
 
   test "GET /bears/1" do
