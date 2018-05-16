@@ -1,35 +1,13 @@
-defmodule Servy.PledgeServer do
+defmodule Servy.GenericServer do
   @moduledoc false
 
   require Logger
 
-  @process_name :pledge_server
-
-  # Client Interface
-  def start(initial_state \\ []) do
-    IO.puts("Starting Pledge Server..")
+  def start(initial_state \\ [], name) do
     pid = spawn(__MODULE__, :listen_loop, [initial_state])
-    Process.register(pid, @process_name)
+    Process.register(pid, name)
     pid
   end
-
-  def create_pledge(name, amount) do
-    call @process_name, {:create_pledge, name, amount}
-  end
-
-  def recent_pledges do
-    call @process_name, :recent_pledges
-  end
-
-  def total_pledged do
-    call @process_name, :total_pledged
-  end
-
-  def clear do
-    cast @process_name, :clear
-  end
-
-  # Helper functions
 
   def call(pid, message) do
     send pid, {:call, self(), message}
@@ -44,16 +22,45 @@ defmodule Servy.PledgeServer do
   def listen_loop(state) do
     receive do
       {:call, sender, message} when is_pid(sender) ->
-        {response, new_state} = handle_call(message, state)
+        {response, new_state} = Servy.PledgeServer.handle_call(message, state)
         send sender, {:response, response}
         listen_loop(new_state)
       {:cast, message} ->
-        new_state = handle_cast(message, state)
+        new_state = Servy.PledgeServer.handle_cast(message, state)
         listen_loop(new_state)
       unexpected ->
         Logger.warn("Received unexpected message: #{inspect unexpected, pretty: true}")
         listen_loop(state)
     end
+  end
+end
+
+defmodule Servy.PledgeServer do
+  @moduledoc false
+
+  alias Servy.GenericServer
+
+  @process_name :pledge_server
+
+  # Client Interface
+  def start(initial_state \\ []) do
+    Servy.GenericServer.start(initial_state, @process_name)
+  end
+
+  def create_pledge(name, amount) do
+    GenericServer.call @process_name, {:create_pledge, name, amount}
+  end
+
+  def recent_pledges do
+    GenericServer.call @process_name, :recent_pledges
+  end
+
+  def total_pledged do
+    GenericServer.call @process_name, :total_pledged
+  end
+
+  def clear do
+    GenericServer.cast @process_name, :clear
   end
 
   def handle_cast(:clear, _state) do
