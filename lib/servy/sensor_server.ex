@@ -29,6 +29,7 @@ defmodule Servy.SensorServer do
   end
 
   def init(_opts) do
+    schedule_new_cache_refreshing()
     {:ok, run_tasks_to_get_sensor_data()}
   end
 
@@ -44,6 +45,12 @@ defmodule Servy.SensorServer do
     {:noreply, state}
   end
 
+  def handle_info(:refresh, _state) do
+    IO.inspect("Refreshing the cache!")
+    schedule_new_cache_refreshing()
+    {:noreply, run_tasks_to_get_sensor_data()}
+  end
+
   defp run_tasks_to_get_sensor_data() do
     task = Task.async(fn -> Tracker.get_location "bigfoot" end)
 
@@ -55,5 +62,9 @@ defmodule Servy.SensorServer do
     location = Task.await(task)
 
     %{snapshots: snapshots, locataion: location}
+  end
+
+  defp schedule_new_cache_refreshing() do
+    Process.send_after(self(), :refresh, :timer.seconds(5))
   end
 end

@@ -13,8 +13,6 @@ defmodule Servy.Handler do
   alias Servy.FourOhFourCounter
   alias Servy.PledgeController
   alias Servy.SensorServer
-  alias Servy.Tracker
-  alias Servy.VideoCam
 
   @doc "Transforms the request into a response."
   def handle(request) do
