@@ -8,14 +8,22 @@ defmodule Servy.SensorServer do
 
   use GenServer
 
+  defmodule State do
+    defstruct [sensor_data: %{}, refresh_interval: :timer.seconds(5)]
+  end
+
   # Client Interface
 
   def get_sensor_data do
     GenServer.call(@name, :get_sensor_data)
   end
 
+  def set_refresh_interval(refresh_interval) do
+    GenServer.cast(@name, {:set_refresh_interval, refresh_interval})
+  end
+
   def start do
-    GenServer.start(__MODULE__, %{}, name: @name)
+    GenServer.start(__MODULE__, %State{}, name: @name)
   end
 
   def stop() do
@@ -28,9 +36,9 @@ defmodule Servy.SensorServer do
     GenServer.start_link(__MODULE__, state, opts)
   end
 
-  def init(_opts) do
-    schedule_new_cache_refreshing()
-    {:ok, run_tasks_to_get_sensor_data()}
+  def init(state) do
+    schedule_new_cache_refreshing(state)
+    {:ok, %{state | sensor_data: run_tasks_to_get_sensor_data()}}
   end
 
   def handle_call(:get_sensor_data, _from, state) do
@@ -41,21 +49,25 @@ defmodule Servy.SensorServer do
     {:reply, :ok, state}
   end
 
+  def handle_cast({:set_refresh_interval, refresh_interval}, state) do
+    {:noreply, %{state | refresh_interval: refresh_interval}}
+  end
+
   def handle_cast(_msg, state) do
     {:noreply, state}
   end
 
-  def handle_info(:refresh, _state) do
+  def handle_info(:refresh, state) do
     IO.inspect("Refreshing the cache!")
-    schedule_new_cache_refreshing()
-    {:noreply, run_tasks_to_get_sensor_data()}
+    schedule_new_cache_refreshing(state)
+    {:noreply, %{state | sensor_data: run_tasks_to_get_sensor_data()}}
   end
 
   defp run_tasks_to_get_sensor_data() do
     task = Task.async(fn -> Tracker.get_location "bigfoot" end)
 
     snapshots =
-      ["16x3i5", "16x3i5", "16x3i5"]
+      [rand_string(), rand_string(), rand_string()]
       |> Enum.map(&Task.async(fn -> VideoCam.snapshot(&1) end))
       |> Enum.map(&Task.await/1)
 
@@ -64,7 +76,17 @@ defmodule Servy.SensorServer do
     %{snapshots: snapshots, locataion: location}
   end
 
-  defp schedule_new_cache_refreshing() do
-    Process.send_after(self(), :refresh, :timer.seconds(5))
+  defp rand_string() do
+    ~w(a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9)
+    |> Enum.take_random(5)
+    |> Enum.join()
+  end
+
+  defp schedule_new_cache_refreshing(state) do
+    Process.send_after(self(), :refresh, current_refresh_interval(state))
+  end
+
+  defp current_refresh_interval(%{refresh_interval: refresh_interval}) do
+    refresh_interval
   end
 end
