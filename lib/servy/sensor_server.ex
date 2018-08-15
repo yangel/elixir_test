@@ -83,10 +83,6 @@ defmodule Servy.SensorServer do
   end
 
   defp schedule_new_cache_refreshing(state) do
-    Process.send_after(self(), :refresh, current_refresh_interval(state))
-  end
-
-  defp current_refresh_interval(%{refresh_interval: refresh_interval}) do
-    refresh_interval
+    Process.send_after(self(), :refresh, state.refresh_interval)
   end
 end
