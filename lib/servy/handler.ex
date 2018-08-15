@@ -4,16 +4,17 @@ defmodule Servy.Handler do
 
   @moduledoc "Handles http requests."
 
-  import Servy.Plugins, only: [track: 1, rewrite_path: 1, log: 1]
   import Servy.Parser, only: [parse: 1]
+  import Servy.Plugins, only: [track: 1, rewrite_path: 1, log: 1]
   import Servy.StaticPages, only: [show_static_page: 2]
 
-  alias Servy.Conv, as: Conv
-  alias Servy.BearController, as: BearController
-  alias Servy.VideoCam
-  alias Servy.Tracker
-  alias Servy.PledgeController
+  alias Servy.BearController
+  alias Servy.Conv
   alias Servy.FourOhFourCounter
+  alias Servy.PledgeController
+  alias Servy.SensorServer
+  alias Servy.Tracker
+  alias Servy.VideoCam
 
   @doc "Transforms the request into a response."
   def handle(request) do
@@ -53,16 +54,7 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/sensors"} = conv) do
-    task = Task.async(fn -> Tracker.get_location "bigfoot" end)
-
-    snapshots =
-      ["16x3i5", "16x3i5", "16x3i5"]
-      |> Enum.map(&Task.async(fn -> VideoCam.snapshot(&1) end))
-      |> Enum.map(&Task.await/1)
-
-    location = Task.await(task)
-
-    %{conv | status: 200, resp_body: inspect({snapshots, location})}
+    %{conv | status: 200, resp_body: inspect(SensorServer.get_sensor_data())}
   end
 
   def route(%Conv{method: "GET", path: "/hibernate/" <> time} = conv) do
