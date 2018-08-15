@@ -67,6 +67,11 @@ defmodule Servy.PledgeServer do
     {:reply, id, new_state}
   end
 
+  def handle_info(message, state) do
+    IO.puts("Can't touch this. Message: #{inspect(message)}")
+    {:noreply, state}
+  end
+
   defp send_pledge_to_service(_name, _amount) do
     {:ok, random_id 50}
   end
